@@ -5,21 +5,21 @@
 #include <vector>
 
 struct Document {
-  uint32_t doc_id;
-  std::string url;
-  std::string title;
-  uint32_t length;
+  uint32_t doc_id_;
+  std::string url_;
+  std::string title_;
+  uint32_t length_;
 };
 
 struct Posting {
-  uint32_t doc_id;
-  uint32_t term_freq;
-  std::vector<uint32_t> positions;
+  uint32_t doc_id_;
+  uint32_t term_freq_;
+  std::vector<uint32_t> positions_;
 };
 
 struct SearchResult {
-  uint32_t doc_id;
-  double score;
-  std::string title;
-  std::string snippet;
+  uint32_t doc_id_;
+  double score_;
+  std::string title_;
+  std::string snippet_;
 };

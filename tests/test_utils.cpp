@@ -1,59 +1,62 @@
-#include "search/common/utils.h"
 #include <gtest/gtest.h>
 
-using namespace search::utils;
+#include "search/common/utils.h"
 
-TEST(IsDelimiterTest, SpaceIsDelimiter) { EXPECT_TRUE(is_delimiter(' ')); }
+using search::utils::IsDelimiter;
+using search::utils::Normalize;
+using search::utils::SplitTokens;
 
-TEST(IsDelimiterTest, LetterIsNotDelimiter) { EXPECT_FALSE(is_delimiter('a')); }
+TEST(IsDelimiterTest, SpaceIsDelimiter) { EXPECT_TRUE(IsDelimiter(' ')); }
 
-TEST(IsDelimiterTest, CommaIsDelimiter) { EXPECT_TRUE(is_delimiter('.')); }
+TEST(IsDelimiterTest, LetterIsNotDelimiter) { EXPECT_FALSE(IsDelimiter('a')); }
+
+TEST(IsDelimiterTest, CommaIsDelimiter) { EXPECT_TRUE(IsDelimiter('.')); }
 
 TEST(IsDelimiterTest, DigitIsNotDelimiter) {
-  EXPECT_FALSE(search::utils::is_delimiter('5'));
+  EXPECT_FALSE(search::utils::IsDelimiter('5'));
 }
 
 TEST(SplitTokensTest, BasicTwoWords) {
-  auto tokens = split_tokens("hello world");
+  auto tokens = SplitTokens("hello world");
   EXPECT_EQ(tokens.size(), 2u);
   EXPECT_EQ(tokens[0], "hello");
   EXPECT_EQ(tokens[1], "world");
 }
 
 TEST(SplitTokensTest, CommaDelimited) {
-  auto tokens = split_tokens("hello,world");
+  auto tokens = SplitTokens("hello,world");
   EXPECT_EQ(tokens.size(), 2u);
   EXPECT_EQ(tokens[0], "hello");
   EXPECT_EQ(tokens[1], "world");
 }
 
 TEST(SplitTokensTest, LeadingTrailingSpaces) {
-  auto tokens = split_tokens("  hello  ");
+  auto tokens = SplitTokens("  hello  ");
   EXPECT_EQ(tokens.size(), 1u);
   EXPECT_EQ(tokens[0], "hello");
 }
 
 TEST(SplitTokensTest, EmptyString) {
-  auto tokens = split_tokens("");
+  auto tokens = SplitTokens("");
   EXPECT_EQ(tokens.size(), 0u);
 }
 
 TEST(SplitTokensTest, ThreeWords) {
-  auto tokens = split_tokens("one two three");
+  auto tokens = SplitTokens("one two three");
   EXPECT_EQ(tokens.size(), 3u);
   EXPECT_EQ(tokens[0], "one");
   EXPECT_EQ(tokens[1], "two");
   EXPECT_EQ(tokens[2], "three");
 }
 
-TEST(NormalizeTest, UpperToLower) { EXPECT_EQ(normalize("Hello"), "hello"); }
+TEST(NormalizeTest, UpperToLower) { EXPECT_EQ(Normalize("Hello"), "hello"); }
 
-TEST(NormalizeTest, AllUpper) { EXPECT_EQ(normalize("WORLD"), "world"); }
+TEST(NormalizeTest, AllUpper) { EXPECT_EQ(Normalize("WORLD"), "world"); }
 
 TEST(NormalizeTest, AlreadyLower) {
-  EXPECT_EQ(normalize("already lowercase"), "already lowercase");
+  EXPECT_EQ(Normalize("already lowercase"), "already lowercase");
 }
 
 TEST(NormalizeTest, DigitsUntouched) {
-  EXPECT_EQ(normalize("abc123"), "abc123");
+  EXPECT_EQ(Normalize("abc123"), "abc123");
 }

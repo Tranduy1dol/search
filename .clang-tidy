@@ -1,0 +1,48 @@
+Checks: '-*,google-*,readability-identifier-naming'
+
+CheckOptions:
+  # Classes, Structs, Enums (PascalCase)
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.StructCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.EnumCase
+    value:           CamelCase
+
+  # Functions (PascalCase)
+  - key:             readability-identifier-naming.FunctionCase
+    value:           CamelCase
+
+  # Local Variables and Parameters (snake_case)
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+  - key:             readability-identifier-naming.ParameterCase
+    value:           lower_case
+
+  # Class Private/Protected Members (snake_case_)
+  - key:             readability-identifier-naming.MemberCase
+    value:           lower_case
+  - key:             readability-identifier-naming.MemberSuffix
+    value:           '_'
+
+  # Constants and Enum Values (kCamelCase)
+  - key:             readability-identifier-naming.GlobalConstantCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.GlobalConstantPrefix
+    value:           k
+  - key:             readability-identifier-naming.ConstexprVariableCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.ConstexprVariablePrefix
+    value:           k
+  - key:             readability-identifier-naming.EnumConstantCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.EnumConstantPrefix
+    value:           k
+
+  # Namespaces (snake_case)
+  - key:             readability-identifier-naming.NamespaceCase
+    value:           lower_case
+
+  # Macros (SCREAMING_SNAKE_CASE)
+  - key:             readability-identifier-naming.MacroDefinitionCase
+    value:           UPPER_CASE
