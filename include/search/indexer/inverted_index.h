@@ -23,6 +23,14 @@ class InvertedIndex {
   double AvgDocLength() const;
   uint32_t DocFreq(const std::string& term) const;
 
+  const std::unordered_map<std::string, std::vector<Posting>>& GetIndex()
+      const {
+    return index_;
+  }
+  const std::unordered_map<uint32_t, Document>& GetDocTable() const {
+    return doc_table_;
+  }
+
  private:
   Tokenizer tokenizer_;
   std::unordered_map<std::string, std::vector<Posting>> index_;

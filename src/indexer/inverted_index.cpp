@@ -1,5 +1,6 @@
 #include "search/indexer/inverted_index.h"
 
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -46,6 +47,14 @@ const std::vector<Posting>& InvertedIndex::GetPostings(
   auto it = index_.find(term);
   if (it == index_.end()) {
     return empty;
+  }
+  return it->second;
+}
+
+const Document& InvertedIndex::GetDocument(uint32_t doc_id) const {
+  auto it = doc_table_.find(doc_id);
+  if (it == doc_table_.end()) {
+    throw std::runtime_error("document not found");
   }
   return it->second;
 }

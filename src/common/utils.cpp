@@ -1,4 +1,9 @@
+#include <sys/types.h>
+
 #include <cctype>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -43,6 +48,21 @@ std::string Normalize(const std::string& utf8_text) {
   }
 
   return result;
+}
+
+void WriteString(FILE* fp, const std::string& str) {
+  uint32_t len = str.size();
+  fwrite(&len, sizeof(uint32_t), 1, fp);
+  fwrite(str.data(), 1, len, fp);
+}
+
+std::string ReadString(const char*& ptr) {
+  uint32_t len;
+  std::memcpy(&len, ptr, sizeof(uint32_t));
+  ptr += sizeof(uint32_t);
+  std::string str(ptr, len);
+  ptr += len;
+  return str;
 }
 
 }  // namespace search::utils

@@ -14,9 +14,9 @@ class InvertedIndexTest : public ::testing::Test {
 
 TEST_F(InvertedIndexTest, HelloPostingsCount) {
   auto& postings = index_.GetPostings("hello");
-  EXPECT_EQ(postings.size(), 1u);  // "hello" only in doc 1
+  EXPECT_EQ(postings.size(), 1u);
   EXPECT_EQ(postings[0].doc_id_, 1u);
-  EXPECT_EQ(postings[0].term_freq_, 2u);  // appears twice
+  EXPECT_EQ(postings[0].term_freq_, 2u);
 }
 
 TEST_F(InvertedIndexTest, WorldInBothDocs) {

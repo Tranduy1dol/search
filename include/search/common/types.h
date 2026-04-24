@@ -23,3 +23,13 @@ struct SearchResult {
   std::string title_;
   std::string snippet_;
 };
+
+struct IndexHeader {
+  uint32_t magic_;
+  uint32_t version_;
+  uint32_t num_docs_;
+  uint32_t num_terms_;
+  double avg_doc_length_;
+  uint64_t doc_table_offset_;
+  uint64_t dict_offset_;
+};
