@@ -24,6 +24,13 @@ file(GLOB_RECURSE SEARCH_LIB_SOURCES
 
 add_library(search_lib STATIC ${SEARCH_LIB_SOURCES})
 
+find_package(CURL REQUIRED)
+target_link_libraries(search_lib
+  PRIVATE
+    CURL::libcurl
+    lexbor
+)
+
 target_include_directories(search_lib PUBLIC
   "${CMAKE_SOURCE_DIR}/include"
 )
