@@ -38,9 +38,7 @@ target_include_directories(search_lib PUBLIC
 target_compile_features(search_lib PUBLIC cxx_std_17)
 
 foreach(APP crawl indexer search)
-  if(APP STREQUAL "crawl")
-    set(APP_SOURCE "${CMAKE_SOURCE_DIR}/app/crawl_main.cpp")
-  elseif(APP STREQUAL "indexer")
+  if(APP STREQUAL "indexer")
     set(APP_SOURCE "${CMAKE_SOURCE_DIR}/app/index_main.cpp")
   else()
     set(APP_SOURCE "${CMAKE_SOURCE_DIR}/app/search_main.cpp")
