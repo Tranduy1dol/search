@@ -1,7 +1,11 @@
+#include <algorithm>
 #include <cctype>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <string>
+#include <thread>
+#include <utility>
 #include <vector>
 
 #include "search/crawler/crawler.h"
@@ -44,28 +48,57 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  search::Crawler crawler;
-  search::InvertedIndex index("data/stopwords_vi.txt");
+  std::mutex queue;
+  std::mutex results;
+  std::vector<search::CrawledPage> pages;
+  size_t curr_url_idx = 0;
 
-  uint32_t doc_id = 1;
+  auto worker_task = [&]() {
+    search::Crawler local_crawler;
+    while (true) {
+      std::string url;
 
-  for (const auto& url : seed_urls) {
-    std::cout << "investigate source: " << url << "...";
-    std::cout.flush();
+      {
+        std::lock_guard<std::mutex> lock(queue);
+        if (curr_url_idx >= seed_urls.size()) {
+          break;
+        }
+        url = seed_urls[curr_url_idx];
+        curr_url_idx++;
+      }
 
-    search::CrawledPage page = crawler.Crawl(url);
+      search::CrawledPage page = local_crawler.Crawl(url);
+      if (page.success_) {
+        std::lock_guard<std::mutex> lock(results);
+        pages.push_back(std::move(page));
+      }
+    }
+  };
 
-    if (page.success_) {
-      std::cout << "success " << page.title_ << "\n";
-      index.AddDocument(doc_id++, page.text_content_, page.title_, page.title_);
-    } else {
-      std::cout << "failed\n";
+  unsigned int num_threads = std::thread::hardware_concurrency();
+  if (num_threads == 0) {
+    num_threads = 4;
+  }
+  num_threads = std::min(num_threads, 10u);
+
+  std::vector<std::thread> threads;
+  for (unsigned int i = 0; i < num_threads; i++) {
+    threads.emplace_back(worker_task);
+  }
+
+  for (auto& t : threads) {
+    if (t.joinable()) {
+      t.join();
     }
   }
 
-  std::cout << "writing index ...";
-  search::DiskIndex::Serialize(index, "index.bin");
-  std::cout << "done, total documents indexed: " << index.TotalDocs() << "\n";
+  uint32_t doc_id = 1;
+  search::InvertedIndex index("data/stopwords_vi.txt");
+  for (const auto& page : pages) {
+    index.AddDocument(doc_id++, page.text_content_, page.title_, page.url_);
+  }
 
+  search::DiskIndex::Serialize(index, "data/index/index.bin");
+  std::cout << "done, total documents indexed: " << index.TotalDocs() << "\n";
   return 0;
 }
