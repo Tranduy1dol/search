@@ -20,6 +20,15 @@ jobs:
             libcurl4-openssl-dev \
             libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc
 
+      - name: Generate protobuf
+        run: |
+          mkdir -p generated/grpc_service/v1
+          protoc --proto_path=proto \
+            --cpp_out=generated \
+            --grpc_out=generated \
+            --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
+            grpc_service/v1/search.proto
+
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
@@ -43,6 +52,15 @@ jobs:
             build-essential cmake pkg-config git \
             libcurl4-openssl-dev \
             libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc
+
+      - name: Generate protobuf
+        run: |
+          mkdir -p generated/grpc_service/v1
+          protoc --proto_path=proto \
+            --cpp_out=generated \
+            --grpc_out=generated \
+            --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
+            grpc_service/v1/search.proto
 
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON

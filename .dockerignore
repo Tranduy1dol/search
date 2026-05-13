@@ -1,0 +1,5 @@
+build/
+generated/
+data/index/
+.git/
+.github/
