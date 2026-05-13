@@ -20,10 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 COPY --from=builder /app/build/search_server .
-COPY data/index/index.bin data/index/index.bin
 COPY data/stopwords_vi.txt data/stopwords_vi.txt
 
-ENV INDEX_PATH=data/index/index.bin
+ENV INDEX_PATH=/data/index/index.bin
 ENV STOPWORDS_PATH=data/stopwords_vi.txt
 ENV SEARCH_PORT=50051
 

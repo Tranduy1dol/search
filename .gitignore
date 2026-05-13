@@ -66,3 +66,9 @@ Thumbs.db
 *.save-temps
 *.ii
 *.s
+
+# Index data (generated, may contain sensitive content)
+data/index/
+
+# Generated protobuf/gRPC code
+generated/
