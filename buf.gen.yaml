@@ -1,0 +1,6 @@
+version: v2
+plugins:
+  - protoc_builtin: cpp
+    out: generated
+  - local: grpc_cpp_plugin
+    out: generated

@@ -24,15 +24,39 @@ file(GLOB_RECURSE SEARCH_LIB_SOURCES
 
 add_library(search_lib STATIC ${SEARCH_LIB_SOURCES})
 
+find_package(Protobuf REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GRPC REQUIRED grpc++ grpc)
+
+add_library(grpc_service STATIC
+  generated/grpc_service/v1/search.pb.cc
+  generated/grpc_service/v1/search.grpc.pb.cc
+)
+target_include_directories(grpc_service PUBLIC "${CMAKE_SOURCE_DIR}/generated")
+target_link_libraries(grpc_service PUBLIC
+  protobuf::libprotobuf
+  ${GRPC_LIBRARIES}
+)
+target_include_directories(grpc_service PUBLIC ${GRPC_INCLUDE_DIRS})
+
+add_executable(search_server app/server_main.cpp)
+target_link_libraries(search_server PRIVATE search_lib grpc_service)
+target_include_directories(search_server PRIVATE
+  "${CMAKE_SOURCE_DIR}/include"
+  "${CMAKE_SOURCE_DIR}/generated"
+)
+
 find_package(CURL REQUIRED)
 target_link_libraries(search_lib
   PRIVATE
     CURL::libcurl
     lexbor
+    grpc_service
 )
 
 target_include_directories(search_lib PUBLIC
   "${CMAKE_SOURCE_DIR}/include"
+  "${CMAKE_SOURCE_DIR}/generated"
 )
 
 target_compile_features(search_lib PUBLIC cxx_std_17)

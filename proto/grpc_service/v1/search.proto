@@ -1,0 +1,47 @@
+syntax = "proto3";
+package grpc_service.v1;
+
+service SearchService {
+  rpc Search(SearchRequest) returns (SearchResponse);
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+}
+
+message SearchRequest {
+  string query = 1;
+  uint32 top_k = 2;
+  ContentFilter filter = 3;
+}
+
+message ContentFilter {
+  repeated ContentType content_types = 1;
+  int32 level = 2;
+}
+
+enum ContentType {
+  CONTENT_TYPE_UNSPECIFIED = 0;
+  CONTENT_TYPE_WORD = 1;
+  CONTENT_TYPE_GRAMMAR = 2;
+  CONTENT_TYPE_PARAGRAPH = 3;
+}
+
+message SearchResponse {
+  repeated SearchHit hits = 1;
+  uint32 total_hits = 2;
+  double query_time_ms = 3;
+}
+
+message SearchHit {
+  string doc_id = 1;
+  double score = 2;
+  string title = 3;
+  string snippet = 4;
+  ContentType content_type = 5;
+  int32 level = 6;
+}
+
+message GetStatsRequest {}
+
+message GetStatsResponse {
+  uint32 total_documents = 1;
+  double avg_document_length = 2;
+}
