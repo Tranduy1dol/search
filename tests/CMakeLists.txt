@@ -36,6 +36,9 @@ foreach(TEST_FILE ${TEST_SOURCES})
     search_lib
     GTest::gtest_main
   )
+  target_compile_definitions(${TEST_NAME} PRIVATE
+    TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/data"
+  )
 
   set_target_properties(${TEST_NAME} PROPERTIES
     CXX_STANDARD 17
