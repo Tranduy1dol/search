@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake pkg-config git \
+            libcurl4-openssl-dev \
+            libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-tidy
+        run: sudo apt-get update && sudo apt-get install -y clang-tidy
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake pkg-config git \
+            libcurl4-openssl-dev \
+            libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build (needed for generated headers)
+        run: cmake --build build -j$(nproc)
+
+      - name: Run clang-tidy
+        run: |
+          find src app -name '*.cpp' | xargs clang-tidy -p build \
+            --checks='-*,readability-*,bugprone-*,performance-*' \
+            --warnings-as-errors='bugprone-*'
+
+  docker:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t search-server .

@@ -34,6 +34,8 @@ int main(int argc, char* argv[]) {
   }
   if (const char* env = std::getenv("SEARCH_PORT")) {
     port = env;
+  } else if (const char* app_port = std::getenv("PORT")) {
+    port = app_port;
   }
 
   auto disk_index = std::make_unique<search::DiskIndex>(index_path);

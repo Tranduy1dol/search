@@ -18,6 +18,16 @@ add_compile_options(
   -Wno-unused-parameter
 )
 
+include(FetchContent)
+FetchContent_Declare(
+  lexbor
+  GIT_REPOSITORY https://github.com/lexbor/lexbor.git
+  GIT_TAG v2.3.0
+)
+set(LEXBOR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LEXBOR_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(lexbor)
+
 file(GLOB_RECURSE SEARCH_LIB_SOURCES
   "${CMAKE_SOURCE_DIR}/src/*.cpp"
 )
@@ -50,7 +60,7 @@ find_package(CURL REQUIRED)
 target_link_libraries(search_lib
   PRIVATE
     CURL::libcurl
-    lexbor
+    lexbor_static
     grpc_service
 )
 
