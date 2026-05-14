@@ -4,6 +4,8 @@ package grpc_service.v1;
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
   rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
+  rpc IndexDocument(IndexDocumentRequest) returns (IndexDocumentResponse);
+  rpc BulkIndex(stream IndexDocumentRequest) returns (BulkIndexResponse);
 }
 
 message SearchRequest {
@@ -44,4 +46,23 @@ message GetStatsRequest {}
 message GetStatsResponse {
   uint32 total_documents = 1;
   double avg_document_length = 2;
+}
+
+message IndexDocumentRequest {
+  string doc_id = 1;
+  string title = 2;
+  string text = 3;
+  string url = 4;
+  ContentType content_type = 5;
+  int32 level = 6;
+}
+
+message IndexDocumentResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message BulkIndexResponse {
+  uint32 indexed_count = 1;
+  uint32 failed_count = 2;
 }
