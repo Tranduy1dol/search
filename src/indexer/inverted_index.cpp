@@ -96,7 +96,11 @@ const Document& InvertedIndex::GetDocument(uint32_t doc_id) const {
 
 uint32_t InvertedIndex::TotalDocs() const { return doc_table_.size(); }
 double InvertedIndex::AvgDocLength() const {
-  return total_tokens_ / TotalDocs();
+  if (TotalDocs() == 0) {
+    return 0.0;
+  }
+
+  return static_cast<double>(total_tokens_) / TotalDocs();
 }
 
 uint32_t InvertedIndex::DocFreq(const std::string& term) const {
