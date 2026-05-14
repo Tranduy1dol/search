@@ -47,6 +47,6 @@ jobs:
       - uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.DEPLOY_PAT }}
-          repository: Tranduy1dol/kotoba-press-deploy
+          repository: Tranduy1dol/kotoba-press-deployer
           event-type: image-updated
           client-payload: '{"service": "search-grpc", "tag": "${{ github.sha }}"}'
