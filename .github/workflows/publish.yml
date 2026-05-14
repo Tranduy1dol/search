@@ -1,0 +1,52 @@
+name: Publish Image
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image name
+        run: echo "IMAGE_NAME=${OWNER,,}/kotoba-search-engine" >> $GITHUB_ENV
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+      - name: Generate protobuf
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends protobuf-compiler-grpc
+          mkdir -p generated/grpc_service/v1
+          protoc --proto_path=proto \
+            --cpp_out=generated --grpc_out=generated \
+            --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
+            grpc_service/v1/search.proto
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DEPLOY_PAT }}
+          repository: Tranduy1dol/kotoba-press-deploy
+          event-type: image-updated
+          client-payload: '{"service": "search-grpc", "tag": "${{ github.sha }}"}'
