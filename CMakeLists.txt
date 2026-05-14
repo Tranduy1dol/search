@@ -62,6 +62,7 @@ target_link_libraries(search_lib
     CURL::libcurl
     lexbor_static
     grpc_service
+    mecab
 )
 
 target_include_directories(search_lib PUBLIC

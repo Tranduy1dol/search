@@ -4,6 +4,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "search/indexer/japanese_tokenizer.h"
+
 namespace search {
 
 class Tokenizer {
@@ -13,6 +15,9 @@ class Tokenizer {
   bool IsStopword(const std::string& token) const;
 
  private:
+  bool ConstainsJapanese(const std::string& text) const;
+  JapaneseTokenizer japanese_tokenizer_;
+
   std::unordered_set<std::string> stopwords_;
   void LoadStopwords(const std::string& path);
 };

@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake pkg-config git ca-certificates \
     libcurl4-openssl-dev \
     libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc \
+    libmecab-dev mecab-ipadic-utf8 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -23,6 +24,7 @@ FROM ubuntu:24.04 AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4 libgrpc++ libprotobuf32t64 \
+    mecab libmecab2 mecab-ipadic-utf8 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
