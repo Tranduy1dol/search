@@ -18,7 +18,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake pkg-config git \
             libcurl4-openssl-dev \
-            libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc
+            libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc \
+            libmecab-dev mecab-ipadic-utf8
 
       - name: Generate protobuf
         run: |
@@ -51,7 +52,8 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake pkg-config git \
             libcurl4-openssl-dev \
-            libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc
+            libgrpc++-dev libprotobuf-dev protobuf-compiler-grpc \
+            libmecab-dev mecab-ipadic-utf8
 
       - name: Generate protobuf
         run: |
