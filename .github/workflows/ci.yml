@@ -71,8 +71,7 @@ jobs:
       - name: Run clang-tidy
         run: |
           find src app -name '*.cpp' | xargs clang-tidy -p build \
-            --checks='-*,readability-*,bugprone-*,performance-*' \
-            --warnings-as-errors='bugprone-*'
+            --warnings-as-errors='*'
 
   docker:
     runs-on: ubuntu-24.04
