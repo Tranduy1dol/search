@@ -7,12 +7,13 @@
 #include <ratio>
 #include <string>
 
-#include "search/indexer/disk_index.h"
+#include "search/indexer/live_index.h"
+#include "search/searcher/live_searcher.h"
 
 namespace search {
 
-SearchServerImpl::SearchServerImpl(Searcher* searcher, DiskIndex* index)
-    : searcher_(searcher), disk_index_(index) {}
+SearchServerImpl::SearchServerImpl(LiveSearcher* searcher, LiveIndex* index)
+    : searcher_(searcher), index_(index) {}
 
 grpc::Status SearchServerImpl::Search(
     grpc::ServerContext* context,
@@ -44,8 +45,43 @@ grpc::Status SearchServerImpl::GetStats(
     grpc::ServerContext* context,
     const grpc_service::v1::GetStatsRequest* request,
     grpc_service::v1::GetStatsResponse* response) {
-  response->set_total_documents(disk_index_->TotalDocs());
-  response->set_avg_document_length(disk_index_->AvgDocLength());
+  response->set_total_documents(index_->TotalDocs());
+  response->set_avg_document_length(index_->AvgDocLength());
+
+  return grpc::Status::OK;
+}
+
+grpc::Status SearchServerImpl::IndexDocument(
+    grpc::ServerContext* context,
+    const grpc_service::v1::IndexDocumentRequest* request,
+    grpc_service::v1::IndexDocumentResponse* response) {
+  index_->IndexDocument(request->doc_id(), request->text(), request->title(),
+                        request->url());
+  response->set_success(true);
+  return grpc::Status::OK;
+}
+
+grpc::Status SearchServerImpl::BulkIndex(
+    grpc::ServerContext* context,
+    grpc::ServerReader<grpc_service::v1::IndexDocumentRequest>* reader,
+    grpc_service::v1::BulkIndexResponse* response) {
+  grpc_service::v1::IndexDocumentRequest request;
+  uint32_t indexed = 0;
+  uint32_t failed = 0;
+
+  while (reader->Read(&request)) {
+    try {
+      index_->IndexDocument(request.doc_id(), request.text(), request.title(),
+
+                            request.url());
+      indexed++;
+    } catch (...) {
+      failed++;
+    }
+  }
+
+  response->set_failed_count(failed);
+  response->set_indexed_count(indexed);
 
   return grpc::Status::OK;
 }
