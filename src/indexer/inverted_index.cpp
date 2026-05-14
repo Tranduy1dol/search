@@ -1,5 +1,7 @@
 #include "search/indexer/inverted_index.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -38,6 +40,39 @@ void InvertedIndex::AddDocument(uint32_t doc_id, const std::string& text,
       Posting posting{doc_id, 1, {static_cast<uint32_t>(i)}};
       posts.push_back(posting);
     }
+  }
+
+  for (const auto& token : tokens) {
+    doc_terms_[doc_id].insert(token);
+  }
+}
+
+void InvertedIndex::RemoveDocument(uint32_t doc_id) {
+  auto doc_it = doc_table_.find(doc_id);
+  if (doc_it == doc_table_.end()) return;
+
+  total_tokens_ -= doc_it->second.length_;
+  doc_table_.erase(doc_it);
+
+  auto terms_it = doc_terms_.find(doc_id);
+  if (terms_it != doc_terms_.end()) {
+    for (const auto& term : terms_it->second) {
+      auto idx_it = index_.find(term);
+      if (idx_it == index_.end()) continue;
+
+      auto& postings = idx_it->second;
+      postings.erase(std::remove_if(postings.begin(), postings.end(),
+                                    [doc_id](const Posting& p) {
+                                      return p.doc_id_ == doc_id;
+                                    }),
+                     postings.end());
+
+      if (postings.empty()) {
+        index_.erase(idx_it);
+      }
+    }
+
+    doc_terms_.erase(terms_it);
   }
 }
 
