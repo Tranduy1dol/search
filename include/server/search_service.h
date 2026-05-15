@@ -33,6 +33,11 @@ class SearchServerImpl final : public grpc_service::v1::SearchService::Service {
       grpc::ServerReader<grpc_service::v1::IndexDocumentRequest>* reader,
       grpc_service::v1::BulkIndexResponse* response) override;
 
+  grpc::Status DeleteDocument(
+      grpc::ServerContext* context,
+      const grpc_service::v1::DeleteDocumentRequest* request,
+      grpc_service::v1::DeleteDocumentResponse* response) override;
+
  private:
   LiveSearcher* searcher_;
   LiveIndex* index_;

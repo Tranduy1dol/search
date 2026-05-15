@@ -25,6 +25,7 @@ class LiveIndex {
 
   void IndexDocument(const std::string& external_id, const std::string& text,
                      const std::string& title, const std::string& url);
+  void RemoveDocument(const std::string& external_id);
 
   std::vector<Posting> GetPostings(const std::string& term) const;
   Document GetDocument(uint32_t doc_id) const;

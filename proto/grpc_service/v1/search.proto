@@ -6,6 +6,7 @@ service SearchService {
   rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
   rpc IndexDocument(IndexDocumentRequest) returns (IndexDocumentResponse);
   rpc BulkIndex(stream IndexDocumentRequest) returns (BulkIndexResponse);
+  rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse);
 }
 
 message SearchRequest {
@@ -65,4 +66,13 @@ message IndexDocumentResponse {
 message BulkIndexResponse {
   uint32 indexed_count = 1;
   uint32 failed_count = 2;
+}
+
+message DeleteDocumentRequest {
+  string doc_id = 1;
+}
+
+message DeleteDocumentResponse {
+  bool success = 1;
+  string message = 2;
 }

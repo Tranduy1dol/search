@@ -86,4 +86,21 @@ grpc::Status SearchServerImpl::BulkIndex(
   return grpc::Status::OK;
 }
 
+grpc::Status SearchServerImpl::DeleteDocument(
+    grpc::ServerContext* context,
+    const grpc_service::v1::DeleteDocumentRequest* request,
+    grpc_service::v1::DeleteDocumentResponse* response) {
+  if (request->doc_id().empty()) {
+    response->set_success(false);
+    response->set_message("doc_id cannot be empty");
+    return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                        "doc_id cannot be empty");
+  }
+
+  index_->RemoveDocument(request->doc_id());
+  response->set_success(true);
+
+  return grpc::Status::OK;
+}
+
 }  // namespace search

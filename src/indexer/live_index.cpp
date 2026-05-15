@@ -56,6 +56,19 @@ void LiveIndex::IndexDocument(const std::string& external_id,
   index_->AddDocument(internal_id, text, title, url);
 }
 
+void LiveIndex::RemoveDocument(const std::string& external_id) {
+  std::unique_lock lock(mutex_);
+
+  auto it = external_to_internal_.find(external_id);
+  if (it == external_to_internal_.end()) return;
+
+  uint32_t internal_id = it->second;
+  index_->RemoveDocument(internal_id);
+
+  internal_to_external_.erase(internal_id);
+  external_to_internal_.erase(it);
+}
+
 std::vector<Posting> LiveIndex::GetPostings(const std::string& term) const {
   std::shared_lock lock(mutex_);
   return index_->GetPostings(term);
