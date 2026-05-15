@@ -16,17 +16,19 @@ struct Config {
   static Config FromEnv() {
     Config cfg;
 
-    cfg.index_path_ = GetEnv("INDEX_PATH", "data/index/index.bin");
-    cfg.stopword_path_ = GetEnv("STOPWORD_PATH", "data/stopword_vi.txt");
-    cfg.flush_interval_sec_ = GetUint32("FLUSH_INTERVAL_SEC", 60, 5, 3600);
+    cfg.index_path_ =
+        GetEnv("APP_SEARCH__INDEX_PATH",
+               GetEnv("INDEX_PATH", "data/index/index.bin"));
+    cfg.stopword_path_ =
+        GetEnv("APP_SEARCH__STOPWORDS_PATH",
+               GetEnv("STOPWORDS_PATH", "data/stopwords_vi.txt"));
+    cfg.flush_interval_sec_ =
+        GetUint32("APP_SEARCH__FLUSH_INTERVAL_SEC",
+                  GetUint32("FLUSH_INTERVAL_SEC", 60, 5, 3600), 5, 3600);
 
-    if (const char* search_port = std::getenv("SEARCH_PORT")) {
-      cfg.port_ = search_port;
-    } else if (const char* port = std::getenv("PORT")) {
-      cfg.port_ = port;
-    } else {
-      cfg.port_ = "50051";
-    }
+    cfg.port_ = GetEnv(
+        "APP_SEARCH__PORT",
+        GetEnv("SEARCH_PORT", GetEnv("PORT", "50051")));
 
     ValidatePort(cfg.port_);
 
