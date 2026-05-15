@@ -2,12 +2,12 @@
 #include <grpcpp/server.h>
 
 #include <csignal>
-#include <cstdint>
-#include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <memory>
 #include <string>
 
+#include "search/common/config.h"
 #include "search/indexer/live_index.h"
 #include "server/search_service.h"
 
@@ -21,29 +21,22 @@ void SignalHandler(int signal) {
 }
 
 int main(int argc, char* argv[]) {
-  std::string index_path = "data/index/index.bin";
-  std::string stopword_path = "data/stopword_vi.txt";
-  std::string port = "50051";
-  uint32_t flush_interval = 60;
-
-  if (const char* env = std::getenv("INDEX_PATH")) index_path = env;
-  if (const char* env = std::getenv("STOPWORD_PATH")) stopword_path = env;
-  if (const char* env = std::getenv("SEARCH_PORT")) {
-    port = env;
-  } else if (const char* app_port = std::getenv("PORT")) {
-    port = app_port;
-  }
-  if (const char* env = std::getenv("FLUSH_INTERVAL_SEC")) {
-    flush_interval = std::stoul(env);
+  search::Config cfg;
+  try {
+    cfg = search::Config::FromEnv();
+  } catch (const std::exception& e) {
+    std::cerr << "invalid config: " << e.what() << "\n";
+    return 1;
   }
 
-  search::LiveIndex live_index(index_path, stopword_path, flush_interval);
+  search::LiveIndex live_index(cfg.index_path_, cfg.stopword_path_,
+                               cfg.flush_interval_sec_);
   std::cout << "loaded" << live_index.TotalDocs() << "documents\n";
 
-  search::LiveSearcher searcher(&live_index, stopword_path);
+  search::LiveSearcher searcher(&live_index, cfg.stopword_path_);
   search::SearchServerImpl service(&searcher, &live_index);
 
-  std::string addr = "0.0.0.0:" + port;
+  std::string addr = "0.0.0.0:" + cfg.port_;
   grpc::ServerBuilder builder;
   builder.AddListeningPort(addr, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
